@@ -102,7 +102,7 @@ Incipient faults are simulated with trapezoidal force profiles, as depicted in F
     </p>   
     
 ##### Intermittent faults
-Emulating the unpredictable nature of intermittent faults, we apply two distinct forces. These forces are designed to mimic either abrupt or intermittent faults. The first force’s magnitude remains within the safe range, while the second force’s magnitude can potentially lead to a fall or maintain stability. Similar to the abrupt and incipient faults, the two forces are each applied within a period of 1.5s. The time between the application of the two forces is 2s. 
+Emulating the unpredictable nature of intermittent faults, we apply two distinct forces. These forces are designed to mimic either abrupt or intermittent faults. The first force’s magnitude remains within the safe range, while the second force’s magnitude can potentially lead to a fall or maintain stability. Similar to the abrupt and incipient faults, the two forces are each applied randomly within a period of 1.5s. The time between the periods of application of the two forces is 2s. For instance, if the period of application for the first force is between 8.0 - 9.5s, the second force is applied between 11.5 - 13.0s. 
 
 
 
