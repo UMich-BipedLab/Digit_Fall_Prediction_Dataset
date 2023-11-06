@@ -15,7 +15,7 @@ We employ Agility’s MuJoCo-based simulator in conjunction with a standing cont
 Abrupt faults are simulated using impulsive forces with a duration of 0.075s, randomly uniformly distributed within a range of 0 - 414.8N. A total of 900 trajectories were simulated
 
 ##### Incipient faults
-Incipient faults are simulated with trapezoidal force profiles as depicted in Figure 3. These profiles have a slope of 480N. A total of 900 trajectories were simulated
+Incipient faults are simulated with trapezoidal force profiles, as depicted in the figure below. These profiles have a slope of 480N/s. A total of 900 trajectories were simulated
 
 ##### Intermittent faults
 Emulating the unpredictable nature of intermittent faults, we apply two distinct forces. These forces are designed to mimic either abrupt or intermittent faults. A total of 100 trajectories were simulated 
