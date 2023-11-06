@@ -5,15 +5,17 @@ This dataset is comprised of simulation and hardware trajectories with various f
 ### Contents
 - Repository Organization ()
 - [Installation](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/blob/main/README.md#installation)
-- Downloading the Dataset
-- Loading the Dataset
-- Dataset Information
-   - Background
-   - Simulation Data Generation
-    - Abrupt Faults
-    - Incipient Faults
-    - Intermittent Faults
-   - Hardware Data Generation
+- [Downloading the Dataset](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/blob/main/README.md#downloading-the-dataset)
+- [Loading the Dataset](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/blob/main/README.md#loading-the-dataset)
+- [Dataset Information](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/blob/main/README.md#dataset-information)
+   - [Background](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/blob/main/README.md#background)
+   - [Simulation Data Generation](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/blob/main/README.md#simulation-data-generation)
+    - [Abrupt Faults](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/blob/main/README.md#abrupt-faults)
+    - [Incipient Faults](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/blob/main/README.md#incipient-faultsv)
+    - [Intermittent Faults](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/blob/main/README.md#intermittent-faults)
+   - [Hardware Data Generation](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/blob/main/README.md#hardware-data-generation)
+
+### Repository Organization
 
 ### Installation
 
