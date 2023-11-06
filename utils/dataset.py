@@ -1,14 +1,7 @@
 import os
-import sys
-
-curr_dir, _ = os.path.split(os.path.realpath(__file__))
-SRC_DIR = os.path.join(curr_dir, "..", "src")
-sys.path.append(SRC_DIR)
-
+import yaml
 import numpy as np
 from typing import Dict
-from DynamicsCalculator import DynamicsCalculator
-from RosbagParser import RosbagParser
 
 
 class DatasetLoader():
@@ -21,6 +14,23 @@ class DatasetLoader():
         self.qdot_data = None
         self.trajectories = None
         self.trajectory_info = {}
+        
+        curr_dir, _ = os.path.split(os.path.realpath(__file__))
+        with open(os.path.join(curr_dir, "params.yaml")) as params_file:
+            self.params = yaml.load(params_file, Loader=yaml.SafeLoader)
+
+        # get the names of the trials to load
+        trial_names = self.params.get("data").get("trial_names")
+        # get the trial types (real, sim) to load
+        trial_types = self.params.get("data").get("trial_types")
+        self.trial_types = trial_types
+        # get the force types (slow, fast, intermittent) to load
+        self.force_type_to_keep = self.params.get("data").get("force_type_to_keep")
+        assert len(trial_names) == len(trial_types) == len(self.force_type_to_keep)
+        # gather path info to each of the trial names
+        self.FEATURE_DATA_PATHS = []
+        for idx, trial_name in enumerate(trial_names):
+            self.FEATURE_DATA_PATHS.append(os.path.join(curr_dir, "..", "digit_data", "feature_data", trial_types[idx], trial_name))
     
     
     def load_dataset(self,
@@ -39,13 +49,10 @@ class DatasetLoader():
         subtract_initial_angle_sim: bool
             A flag to subtract the inital q and qdot values from the rest of the q and qdot values
         """
-        generate = False
-        rosbag_parser = RosbagParser()
-        dyn_calc = DynamicsCalculator(rosbag_parser=rosbag_parser)
 
         self.pos_data, self.vel_data, self.ang_mom_data,\
             self.time_data, self.q_data, self.qdot_data,\
-                self.command_torque_data, self.motor_torque_measured_data, self.real_labels = dyn_calc.get_all_data_in_all_rosbags(generate=generate)
+                self.command_torque_data, self.motor_torque_measured_data = self.get_all_data_in_all_rosbags()
 
         self.trajectories = list(self.pos_data.keys())
         self.extract_trajectory_info()
@@ -59,8 +66,80 @@ class DatasetLoader():
         # make changes to the sim data
         if subtract_initial_angle_sim:
             self.subtract_initial_angle_sim()
-        
     
+    
+    def get_all_data_in_all_rosbags(self):
+        print("Loading position data...")
+        all_pos_data = self.load_npy_files("digit_positions.npy")
+        
+        print("Loading velocity data...")
+        all_vel_data = self.load_npy_files("digit_velocity.npy")
+        
+        print("Loading angular momentum data...")
+        all_ang_mom_data = self.load_npy_files("digit_angular_momentum.npy")
+        
+        print("Loading time data...")
+        all_time_data = self.load_npy_files("digit_time.npy")
+        
+        print("Loading q data...")
+        all_q_data = self.load_npy_files("digit_q.npy")
+        
+        print("Loading q dot data...")
+        all_qdot_data = self.load_npy_files("digit_qdot.npy")
+        
+        print("Loading command torque data...")
+        all_command_torque_data = self.load_npy_files("digit_command_torque.npy")
+        
+        print("Loading motor torque measured data...")
+        all_motor_torque_measured_data = self.load_npy_files("digit_motor_torque_measured.npy")
+
+        # filter data according to force type (slow, fast, intermittent) and combine them into one dict
+        all_pos_data_combined = {}
+        all_vel_data_combined = {}
+        all_ang_mom_data_combined = {}
+        all_time_data_combined = {}
+        all_q_data_combined = {}
+        all_qdot_data_combined = {}
+        all_command_torque_data_combined = {}
+        all_motor_torque_measured_data_combined = {}
+
+        print("Filtering data based on force type...")
+        for i in range(len(self.FEATURE_DATA_PATHS)):
+            all_pos_data_combined.update(self.force_type_filter(all_pos_data[i], self.force_type_to_keep[i]))
+            all_vel_data_combined.update(self.force_type_filter(all_vel_data[i], self.force_type_to_keep[i]))
+            all_ang_mom_data_combined.update(self.force_type_filter(all_ang_mom_data[i], self.force_type_to_keep[i]))
+            all_time_data_combined.update(self.force_type_filter(all_time_data[i], self.force_type_to_keep[i]))
+            all_q_data_combined.update(self.force_type_filter(all_q_data[i], self.force_type_to_keep[i]))
+            all_qdot_data_combined.update(self.force_type_filter(all_qdot_data[i], self.force_type_to_keep[i]))
+            all_command_torque_data_combined.update(self.force_type_filter(all_command_torque_data[i], self.force_type_to_keep[i]))
+            all_motor_torque_measured_data_combined.update(self.force_type_filter(all_motor_torque_measured_data[i], self.force_type_to_keep[i]))
+        
+        return all_pos_data_combined, all_vel_data_combined,\
+              all_ang_mom_data_combined, all_time_data_combined,\
+                  all_q_data_combined, all_qdot_data_combined, all_command_torque_data_combined,\
+                    all_motor_torque_measured_data_combined
+                    
+                    
+    def load_npy_files(self, npy_file_name):
+        feature_list = []
+        for feature_data in self.FEATURE_DATA_PATHS:
+            data_dict = np.load(os.path.join(feature_data, npy_file_name), allow_pickle=True).item()
+            feature_list.append(data_dict)
+        return feature_list
+    
+    
+    def force_type_filter(self, data, force_type_to_keep):
+        assert force_type_to_keep in ["slow", "fast", "intermittent", "all"]
+        if force_type_to_keep == "all":
+            return data
+        filtered_data = {}
+        for traj in data:
+            if force_type_to_keep == "slow" and self.is_slow_acting(trajectory=traj):
+                filtered_data[traj] = data[traj]
+            if force_type_to_keep == "fast" and not self.is_slow_acting(trajectory=traj):
+                filtered_data[traj] = data[traj]
+        return filtered_data
+        
     
     def transform_real_trajectories(self):
         """
@@ -139,13 +218,24 @@ class DatasetLoader():
         """
         for traj in self.trajectories:
             info = {"hardware_data": self.is_real_data(traj),
-                    "force_type": "slow" if self.is_slow_acting(traj) else "fast",
+                    "force_type": self.get_force_type_applied_on_trajectory(traj),
                     "time_of_force_application": self.get_t_force_applied(traj),
                     "time_of_pertubation_application": 6.0,
                     "force_magnitude": self.get_force_applied(traj),
                     "pertubation_magnitude": self.get_pertubation_force_applied(traj)}
             self.trajectory_info[traj] = info
-            
+    
+    
+    def get_force_type_applied_on_trajectory(self, trajectory: str):
+        if self.is_slow_acting(trajectory=trajectory):
+            return "slow"
+        elif self.is_fast_acting(trajectory=trajectory):
+            return "fast"
+        elif self.is_intermittent(trajectory=trajectory):
+            return "intermittent"
+        else:
+            raise Exception("Force type is invalid!")
+    
     
     def is_slow_acting(self, trajectory: str):
         """
@@ -160,6 +250,36 @@ class DatasetLoader():
             True if it is a slow-acting/incipient trajectory. False, otherwise
         """
         return "fd_1.0" in trajectory or "slow" in trajectory
+    
+    
+    def is_fast_acting(self, trajectory: str):
+        """
+        Checks if a trajectory is a fast-acting/abrupt one
+
+        Args
+        ----
+        trajectory: str
+            The trajectory to check
+
+        Returns:
+            True if it is a fast-acting/abrupt trajectory. False, otherwise
+        """
+        return "fd_0.075" in trajectory or "fast" in trajectory
+    
+    
+    def is_intermittent(self, trajectory: str):
+        """
+        Checks if a trajectory is an intermittent one
+
+        Args
+        ----
+        trajectory: str
+            The trajectory to check
+
+        Returns:
+            True if it is a intermittent trajectory. False, otherwise
+        """
+        return trajectory.count("0.075") + trajectory.count("1.0") == 2
     
     
     def get_t_force_applied(self, trajectory: str):
@@ -194,22 +314,22 @@ class DatasetLoader():
                 except IndexError:
                     motor_killed_idx = len(self.motor_torque_measured_data[traj])
 
-            self.pos_data, self.vel_data, self.ang_mom_data,\
-                self.q_data, self.qdot_data, self.command_torque_data,\
-                    self.motor_torque_measured_data, self.time_data = self._truncate_data_helper(
-                                                                            start_idx=0,
-                                                                            end_idx=motor_killed_idx-1,
-                                                                            traj=traj,
-                                                                            pos_data=self.pos_data,
-                                                                            vel_data=self.vel_data,
-                                                                            ang_mom_data=self.ang_mom_data,
-                                                                            q_data=self.q_data,
-                                                                            qdot_data=self.qdot_data,
-                                                                            command_torque_data=self.command_torque_data,
-                                                                            motor_torque_measured_data=self.motor_torque_measured_data,
-                                                                            time_data=self.time_data
-                                                                            )
-        
+                self.pos_data, self.vel_data, self.ang_mom_data,\
+                    self.q_data, self.qdot_data, self.command_torque_data,\
+                        self.motor_torque_measured_data, self.time_data = self._truncate_data_helper(
+                                                                                start_idx=0,
+                                                                                end_idx=motor_killed_idx-1,
+                                                                                traj=traj,
+                                                                                pos_data=self.pos_data,
+                                                                                vel_data=self.vel_data,
+                                                                                ang_mom_data=self.ang_mom_data,
+                                                                                q_data=self.q_data,
+                                                                                qdot_data=self.qdot_data,
+                                                                                command_torque_data=self.command_torque_data,
+                                                                                motor_torque_measured_data=self.motor_torque_measured_data,
+                                                                                time_data=self.time_data
+                                                                                )
+            
         
     def subtract_initial_angle_sim(self):
         for traj in self.time_data:
@@ -312,6 +432,8 @@ class DatasetLoader():
 
 if __name__ == "__main__":
     dl = DatasetLoader()
-    dl.load_dataset(transform_real_trajectories=True, remove_hardware_data_after_killed=True)
+    dl.load_dataset(transform_real_trajectories=True,
+                    remove_hardware_data_after_killed=True,
+                    subtract_initial_angle_sim=True)
     print("end ")
     

@@ -25,31 +25,21 @@ Emulating the unpredictable nature of intermittent faults, we apply two distinct
 1. Clone the repository
 
    ```
-   git clone https://github.com/Emungai/Fault_Detection_Diagnostics.git
+   git clone https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset.git
    OR
-   git clone git@github.com:Emungai/Fault_Detection_Diagnostics.git
+   git clone git@github.com:UMich-BipedLab/Digit_Fall_Prediction_Dataset.git
    ```
 2. Generate shared libraries
 
    ```
    # create a build folder
-   cd Fault_Detection_Diagnostics && cd c_functions
+   cd Digit_Fall_Prediction_Dataset && cd c_functions
    mkdir build
 
    # build libraries
    cd build
    cmake ..
    make all
-   ```
-3. Create python virtual environment and install packages (this was tested with python 3.6.9)
-
-   ```
-   cd Fault_Detection_Diagnostics
-   mkdir .venvs && cd .venvs
-   python3 -m venv digit_venv
-   source digit_venv/bin/activate
-   pip3 install --upgrade pip
-   pip3 install -r requirements.txt
    ```
 
 ### Downloading the dataset

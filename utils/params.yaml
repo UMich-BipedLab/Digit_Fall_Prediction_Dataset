@@ -1,0 +1,11 @@
+data:
+  trial_names: # the names of the trials. It has to correspond with the trial_types parameter
+    - "trial_22"
+    - "trial_23"
+    - "trial_25"
+    - "trial_26"
+    - "trial_27"
+
+  trial_types: ["sim", "sim", "sim", "sim", "sim"] # set this parameter to "sim" for using simulation data and "real" for real data
+  force_type_to_keep: ["all", "all", "all", "all", "all"] # for each corresponding trials listed, choose the force type to keep. Either "slow", "fast", "intermittent" or "all"
+  relative_feature_data_path: "./..digit_data/feature_data"
