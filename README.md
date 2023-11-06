@@ -1,6 +1,6 @@
 ## Digit Fall Dataset
 
-This dataset is comprised of simulation and hardware trajectories with various faults for the Digit robot during the task of standing. The simulation trajectories contain abrupt, incipient, and intermittent faults, while the hardware trajectories only have abrupt and incipient faults.
+This dataset is comprised of simulation and hardware trajectories with various faults for the Digit robot during the task of standing. The simulation trajectories contain abrupt, incipient, and intermittent faults, while the hardware trajectories contain abrupt and incipient faults.
 
 ### Contents
 - Repository Organization ()
@@ -17,6 +17,13 @@ This dataset is comprised of simulation and hardware trajectories with various f
 
 ### Repository Organization
 
+├── c_function 
+├── utils
+│   ├── DynamicsCalculator.py 
+│   ├── dataset.py
+│   ├── params.yaml
+└── README.md
+└── main.py 
 ### Installation
 
 1. Clone the repository
