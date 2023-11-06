@@ -1,6 +1,6 @@
-./c_functions/build/*
-./c_functions/build
-./c_functions/c_kin/*
-./digit_data/*
+c_functions/build/*
+c_functions/build
+c_functions/c_kin/*
+digit_data/feature_data/*
 
 utils/__pycache__/*
