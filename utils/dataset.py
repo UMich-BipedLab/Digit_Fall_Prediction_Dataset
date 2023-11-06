@@ -470,6 +470,6 @@ if __name__ == "__main__":
     dl = DatasetLoader()
     dl.load_dataset(transform_real_trajectories=True,
                     remove_hardware_data_after_killed=True,
-                    subtract_initial_angle_sim=True)
+                    subtract_initial_value=True)
     print("end ")
     

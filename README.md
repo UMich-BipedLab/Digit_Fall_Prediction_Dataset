@@ -19,13 +19,15 @@ This dataset is comprised of simulation and hardware trajectories with various f
 ### Repository Organization
 ```
 .
-├── c_function 
+├── c_function
+|   ├── CMakeLists.txt
 ├── utils
 │   ├── DynamicsCalculator.py 
 │   ├── dataset.py
 │   ├── params.yaml
 └── README.md
 └── main.py
+└── .gitignore
 ```
 ### Installation
 
@@ -37,7 +39,7 @@ This dataset is comprised of simulation and hardware trajectories with various f
    git clone git@github.com:UMich-BipedLab/Digit_Fall_Prediction_Dataset.git
    ```
 2. Generate shared libraries
-- [Download the c_kin](https://drive.google.com/drive/folders/1e2JOxkFBqKKjPFwIzKh90jPmDfrOx2e7?usp=sharing) and extract it in c_functions folder.
+- [Download the c_kin](https://drive.google.com/drive/folders/1e2JOxkFBqKKjPFwIzKh90jPmDfrOx2e7?usp=sharing) and extract it inside the c_functions folder.
 - Build the downloaded c functions:
 
    ```
@@ -49,6 +51,18 @@ This dataset is comprised of simulation and hardware trajectories with various f
    cd build
    cmake ..
    make all
+   ```
+3. Install python requirements
+   ```
+   # create a virtual environment of your choice
+   cd Digit_Fall_Prediction_Dataset && mkdir .venvs && cd .venvs
+   python3 -m venv digit_venv
+   source digit_venv/bin/activate
+   pip3 install --upgrade pip
+   
+   # install python requirements
+   cd ..
+   pip3 install -r requirements.txt
    ```
 
 ### Downloading the Dataset
@@ -107,6 +121,7 @@ Emulating the unpredictable nature of intermittent faults, we apply two distinct
 
 
 #### Hardware Data Generation
+##### Methodology
 To prevent the Digit robot from getting damaged during data collection, the hardware data generation is carried out with Digit attached to a gantry. Additionally, the motor power is “killed” when the robot starts to fall, thereby allowing the gantry to catch it. Note that we attempt to “kill” the motors prior to the gantry catching the robot.  Impulsive and trapezoidal forces are introduced to the robot’s torso by pushing Digit with a pole. To emulate the trapezoidal forces that result in an incipient fault, the pole is first rested on Digit before pushing. Twenty-seven (27) safe and 13 unsafe trajectories are collected for abrupt faults, while 26 safe and
 15 unsafe trajectories are collected for incipient faults. Figure 3 depicts the experimental setup of the hardware data.
 
@@ -117,6 +132,10 @@ To prevent the Digit robot from getting damaged during data collection, the hard
    Figure 3
     </p>   
     
+##### Hardware Data Post-Processing
+The world frame is defined as the Digit's base pose (position and orientation) when it is powered on. During hardware data collection, after powering the robot on, it is positioned in its mark (as seen by the alignment of the Digit's toes to the blue tape on the ground in Figure 3). To ensure that the data collected is with reference to the Digit's starting pose as shown in Figure 3 instead of the world frame, a homogenous transformation is performed on the data collected. For implementation details, please refer to `transform_real_trajectories()` function in the ./utils/dataset.py file.
+
+
 #### References
 1. M. E. Mungai, G. Prabhakaran, and J. Grizzle, “Fall Prediction for Bipedal Robots: The Standing Phase,” arXiv preprint arXiv:2309.14546 (2023), Submitted to ICRA 2024.
 2. G. Gibson, “Terrain-aware bipedal locomotion,” Ph.D. dissertation, University of Michigan, 2023.
