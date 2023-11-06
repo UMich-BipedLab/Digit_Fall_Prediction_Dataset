@@ -2,6 +2,10 @@
 
 This dataset is comprised of simulation and hardware trajectories with various faults for the Digit robot during the task of standing. The simulation trajectories contain abrupt, incipient, and intermittent faults, while the hardware trajectories contain abrupt and incipient faults.
 
+
+https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/assets/30183296/a6505912-a8c7-4f5a-82ea-490fc0e877e9
+
+
 ### Contents
 - [Repository Organization](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/tree/main#repository-organization)
 - [Installation](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/blob/main/README.md#installation)
