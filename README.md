@@ -4,7 +4,7 @@ This dataset is comprised of simulation and hardware trajectories with various f
 
 ### Contents
 - Repository Organization ()
-- [Installation](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/edit/main/README.md#installation)
+- [Installation](#installation)
 - Downloading the Dataset
 - Loading the Dataset
 - Dataset Information
