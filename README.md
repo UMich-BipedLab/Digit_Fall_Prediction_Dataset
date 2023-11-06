@@ -115,6 +115,7 @@ To prevent the Digit robot from getting damaged during data collection, the hard
 <p align="center">
    Figure 3
     </p>   
+    
 #### References
 1. M. E. Mungai, G. Prabhakaran, and J. Grizzle, “Fall Prediction for Bipedal Robots: The Standing Phase,” arXiv preprint arXiv:2309.14546 (2023), Submitted to ICRA 2024.
 2. G. Gibson, “Terrain-aware bipedal locomotion,” Ph.D. dissertation, University of Michigan, 2023.
