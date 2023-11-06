@@ -2,6 +2,11 @@ import os
 import ctypes
 import numpy as np
 
+"""
+This function demonstrates how to load and use the c_functions
+Note that the c_functions should only be used with the original (non pre-processed) q and qdot.
+ P_com_rel = P_com - 0.5*(P_rightToeMid + P_leftToeMid)
+"""
 
 def _convert_c_array_to_np(prefix, c_array):
     if prefix == "p" or prefix == "L" or prefix == "v":

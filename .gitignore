@@ -4,3 +4,4 @@ c_functions/c_kin/*
 digit_data/*
 
 utils/__pycache__/*
+.venvs/*

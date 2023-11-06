@@ -2,8 +2,12 @@ import os
 import yaml
 import numpy as np
 from typing import Dict
-
-
+"""
+This function demonstrates how to load the dataset and apply various data pre-processing methods such as a transformation matrix for the hardware data and subtracting initial values.
+Note that the c_functions should only be used with the original (non pre-processed) q and qdot.
+Note that the positions are only valid when Digit's 'toes' (feet) are on the ground
+        P_com_rel = P_com - 0.5*(P_rightToeMid + P_leftToeMid)
+"""
 class DatasetLoader():
     def __init__(self) -> None:
         self.pos_data = None
@@ -36,7 +40,7 @@ class DatasetLoader():
     def load_dataset(self,
                      transform_real_trajectories: bool,
                      remove_hardware_data_after_killed: bool,
-                     subtract_initial_angle_sim: bool):
+                     subtract_initial_value: bool):
         """
         Loads the digit dataset. This includes q, qdot, time, position, velocity and angular momentum data.
 
@@ -46,8 +50,8 @@ class DatasetLoader():
             A flag to transform the real/hardware trajectories to the world coordinates
         remove_hardware_data_after_killed: bool
             A flag to remove all hardware data after the robot is killed/e-stopped
-        subtract_initial_angle_sim: bool
-            A flag to subtract the inital q and qdot values from the rest of the q and qdot values
+        subtract_initial_value: bool
+            A flag to subtract the inital values from features
         """
 
         self.pos_data, self.vel_data, self.ang_mom_data,\
@@ -64,8 +68,8 @@ class DatasetLoader():
             self.remove_hardware_data_after_killed()
             
         # make changes to the sim data
-        if subtract_initial_angle_sim:
-            self.subtract_initial_angle_sim()
+        if subtract_initial_value:
+            self.subtract_initial_value()
     
     
     def get_all_data_in_all_rosbags(self):
@@ -129,6 +133,9 @@ class DatasetLoader():
     
     
     def force_type_filter(self, data, force_type_to_keep):
+        """
+        parses through all the trajectories and keeps only trajectories with the desired critial fault
+        """
         assert force_type_to_keep in ["slow", "fast", "intermittent", "all"]
         if force_type_to_keep == "all":
             return data
@@ -227,6 +234,9 @@ class DatasetLoader():
     
     
     def get_force_type_applied_on_trajectory(self, trajectory: str):
+        """
+        retrieves the type of fault that is applied to the trajectory
+        """
         if self.is_slow_acting(trajectory=trajectory):
             return "slow"
         elif self.is_fast_acting(trajectory=trajectory):
@@ -283,6 +293,11 @@ class DatasetLoader():
     
     
     def get_t_force_applied(self, trajectory: str):
+
+        """
+        Retrieves the time that the fault was applied
+        """
+
         if self.is_real_data(trajectory=trajectory):
             return None
         info = trajectory.replace(".bag", "").split("_")
@@ -291,6 +306,10 @@ class DatasetLoader():
     
     
     def get_force_applied(self, trajectory: str):
+        """
+        Gets the force magnitude applied 
+        """
+
         if self.is_real_data(trajectory=trajectory):
             return None
         info = trajectory.replace(".bag", "").split("_")
@@ -299,6 +318,10 @@ class DatasetLoader():
 
     
     def get_pertubation_force_applied(self, trajectory: str):
+        """
+        Gets the perturbation/oscillatory force magnitude
+        """
+
         if self.is_real_data(trajectory=trajectory):
             return None
         info = trajectory.replace(".bag", "").split("_")
@@ -307,6 +330,9 @@ class DatasetLoader():
     
     
     def remove_hardware_data_after_killed(self):
+        """
+        Removes data after the motor is killed
+        """
         for traj in self.trajectories:
             if self.is_real_data(traj):
                 try:
@@ -331,12 +357,22 @@ class DatasetLoader():
                                                                                 )
             
         
-    def subtract_initial_angle_sim(self):
+    def subtract_initial_value(self):
+        """
+        Subtracts the initial value of features
+        """
         for traj in self.time_data:
-            if self.is_sim_data(traj):
-                self.q_data[traj] -= self.q_data[traj] - self.q_data[traj][0]
-                self.qdot_data[traj] -= self.q_data[traj] - self.q_data[traj][0]                  
-            
+            self.q_data[traj] -= self.q_data[traj] - self.q_data[traj][0]
+            self.qdot_data[traj] -= self.qdot_data[traj] - self.qdot_data[traj][0]   
+            self.command_torque_data[traj] -= self.command_torque_data[traj] - self.command_torque_data[traj][0]     
+            for ang_mom_feature_name in list(self.ang_mom_data[traj].keys()):         
+                self.ang_mom_data[traj][ang_mom_feature_name] -= self.ang_mom_data[traj][ang_mom_feature_name] - self.ang_mom_data[traj][ang_mom_feature_name][0] 
+            for pos_feature_name in list(self.pos_data[traj].keys()): 
+                if pos_feature_name != 'p_COM_rel':
+                    self.pos_data[traj][pos_feature_name] -= self.pos_data[traj][pos_feature_name] - self.pos_data[traj][pos_feature_name][0] 
+            for vel_feature_name in list(self.vel_data[traj].keys()): 
+                if vel_feature_name != 'v_COM_rel':
+                    self.vel_data[traj][vel_feature_name] -= self.vel_data[traj][vel_feature_name] - self.vel_data[traj][vel_feature_name][0]             
     
     def _truncate_data_helper(self,
                             start_idx: int,

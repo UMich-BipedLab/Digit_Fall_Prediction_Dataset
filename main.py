@@ -7,7 +7,7 @@ def load_digit_dataset():
     dl = dataset.DatasetLoader()
     dl.load_dataset(transform_real_trajectories=True,
                     remove_hardware_data_after_killed=True,
-                    subtract_initial_angle_sim=True)
+                    subtract_initial_value=True)
     
     # extract dataset information
     pos_data = dl.pos_data
