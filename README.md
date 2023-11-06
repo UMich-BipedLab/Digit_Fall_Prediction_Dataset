@@ -1,32 +1,6 @@
 ## Digit Fall Dataset
 
-This dataset is comprised of simulation and hardware trajectories with abrupt, incipient, and intermittent faults for the Digit robot during the task of standing. 
-
-### Background
-
-Falls can be attributed to faults, which are defined as unforeseen deviations in one or more operation variables. As depicted in the image below, faults can be classified into three types based on their time dependency: abrupt, incipient, and intermittent. Abrupt faults are rapidly varying, incipient faults are drift-like, and intermittent faults are sporadic. As we discuss in [1] each of these fault types can arise during real-world operation.
-
-Relevant Definitions:
-
-* Critical faults: faults that lead to falls
-
-* Lead time: the time to react
-
-     * Defined as the difference between the time of the actual fall and the predicted fall
-#### Simulation Data
-
-We employ Agility’s MuJoCo-based simulator in conjunction with a standing controller [1]. The objective of the controller is to maintain both the center of mass and the zero-moment point within the support polygon. Three different kinds of faults were applied, abrupt, incipient and intermittent. These faults are simulated by applying forces of various magnitudes to the robot’s torso in the x-direction (i.e., sagittal plane).   To simulate minor disturbances that might induce slight oscillations in the robot’s standing posture, we introduce impulsive forces with a 0.075s duration, ranging from 0 - 202.4N, at the start of each trajectory.
-
-##### Abrupt faults
-Abrupt faults are simulated using impulsive forces with a duration of 0.075s, randomly uniformly distributed within a range of 0 - 414.8N. A total of 900 trajectories were simulated
-
-##### Incipient faults
-Incipient faults are simulated with trapezoidal force profiles, as depicted in the figure below. These profiles have a slope of 480N/s. A total of 900 trajectories were simulated
-<p align="center">
-<img src="https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/blob/main/utils/trap_force_profile_2.png" data-canonical-src="[https://gyazo.com/eb5c5741b6a9a16c692170a41a49c858.png](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/blob/main/utils/trap_force_profile_2.png)" width="600" />
-   </p>
-##### Intermittent faults
-Emulating the unpredictable nature of intermittent faults, we apply two distinct forces. These forces are designed to mimic either abrupt or intermittent faults. A total of 100 trajectories were simulated 
+This dataset is comprised of simulation and hardware trajectories with various faults for the Digit robot during the task of standing. The simulation trajectories contain abrupt, incipient, and intermittent faults, while the hardware trajectories only have abrupt and incipient faults.
 
 ### Installation
 
@@ -62,3 +36,64 @@ dl = DatasetLoader()
 # load the dataset 
 dl.load_dataset(transform_real_trajectories=True, remove_hardware_data_after_killed=True, subtract_initial_angle_sim=True)
 ```
+
+
+### Dataset Information
+#### Background
+
+Falls can be attributed to faults, which are defined as unforeseen deviations in one or more operation variables. As depicted in Figure 1, faults can be classified into three types based on their time dependency: abrupt, incipient, and intermittent. Abrupt faults are rapidly varying, incipient faults are drift-like, and intermittent faults are sporadic. As we discuss in [1] each of these fault types can arise during real-world operation.
+
+Relevant Definitions:
+
+* Critical faults: faults that lead to falls
+
+* Lead time: the time to react
+
+     * Defined as the difference between the time of the actual fall and the predicted fall
+* Unsafe trajectories: trajectories with critical faults
+ 
+<p align="center">
+<img src="https://images.squarespace-cdn.com/content/v1/611a553f61f55233affe305b/a9cd689f-faae-4fb5-9fc4-eb97bd179447/faults_time_dependency_2.png?format=1000w"  width="600" />
+    
+   </p>      
+<p align="center">
+   Figure 1
+    </p>
+    
+#### Simulation Data Generation
+
+To generate the trajectories, we employ Agility’s MuJoCo-based simulator in conjunction with a standing controller [1]. The objective of the controller is to maintain both the center of mass and the zero-moment point within the support polygon. The faults are simulated by applying forces of various magnitudes to the robot’s torso in the x-direction (i.e., sagittal plane). To simulate minor disturbances that might induce slight oscillations in the robot’s standing posture, we introduce impulsive forces with a 0.075s duration, ranging from 0 - 202.4N, at the start of each trajectory.
+
+##### Abrupt faults
+Abrupt faults are simulated using impulsive forces with a duration of 0.075s, randomly uniformly distributed within a range of 0 - 414.8N. The range is chosen such that half of the trajectories contain critical abrupt faults. The impulsive forces are introduced randomly within a period of 1.5s, and a total of 900 trajectories were simulated. 
+
+##### Incipient faults
+Incipient faults are simulated with trapezoidal force profiles, as depicted in Figure 2. These profiles have a slope of 480N/s over a varying duration to result in a desired constant amplitude over a time duration of 1s; the resulting force amplitudes of incipient faults are randomly uniformly distributed between 0 - 57.6N. The range is chosen such that half of the trajectories contain critical abrupt faults, and the incipient faults are introduced randomly within a period of 1.5s. A total of 900 trajectories were simulated
+<p align="center">
+<img src="https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/blob/main/utils/trap_force_profile_2.png"  width="600" /> 
+</p>
+<p align="center">
+   Figure 2
+    </p>   
+    
+##### Intermittent faults
+Emulating the unpredictable nature of intermittent faults, we apply two distinct forces. These forces are designed to mimic either abrupt or intermittent faults. The first force’s magnitude remains within the safe range, while the second force’s magnitude can potentially lead to a fall or maintain stability. Similar to the abrupt and incipient faults, the two forces are each applied within a period of 1.5s. The time between the application of the two forces is 2s. 
+
+
+
+#### Hardware Data Generation
+To prevent the Digit robot from getting damaged during data collection, the hardware data generation is carried out with Digit attached to a gantry. Additionally, the motor power is “killed” when the robot starts to fall, thereby allowing the gantry to catch it. Note that we attempt to “kill” the motors prior to the gantry catching the robot.  Impulsive and trapezoidal forces are introduced to the robot’s torso by pushing Digit with a pole. To emulate the trapezoidal forces that result in an incipient fault, the pole is first rested on Digit before pushing. Twenty-seven (27) safe and 13 unsafe trajectories are collected for abrupt faults, while 26 safe and
+15 unsafe trajectories are collected for incipient faults. Figure 3 depicts the experimental setup of the hardware data.
+
+<p align="center">
+<img src="https://static1.squarespace.com/static/611a553f61f55233affe305b/t/6548f541f268e87c0e0bb7da/1699280193802/File+%281%29.jpg"  height="400" /> 
+</p>
+<p align="center">
+   Figure 3
+    </p>   
+
+
+
+
+
+
