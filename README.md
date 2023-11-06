@@ -86,7 +86,7 @@ Relevant Definitions:
     
 #### Simulation Data Generation
 
-To generate the trajectories, we employ Agility’s MuJoCo-based simulator in conjunction with a standing controller [1]. The objective of the controller is to maintain both the center of mass and the zero-moment point within the support polygon. The faults are simulated by applying forces of various magnitudes to the robot’s torso in the x-direction (i.e., sagittal plane). To simulate minor disturbances that might induce slight oscillations in the robot’s standing posture, we introduce impulsive forces with a 0.075s duration, ranging from 0 - 202.4N, at the start of each trajectory.
+To generate the trajectories, we employ Agility’s MuJoCo-based simulator in conjunction with a standing controller [2]. The objective of the controller is to maintain both the center of mass and the zero-moment point within the support polygon. The faults are simulated by applying forces of various magnitudes to the robot’s torso in the x-direction (i.e., sagittal plane). To simulate minor disturbances that might induce slight oscillations in the robot’s standing posture, we introduce impulsive forces with a 0.075s duration, ranging from 0 - 202.4N, at the start of each trajectory.
 
 ##### Abrupt faults
 Abrupt faults are simulated using impulsive forces with a duration of 0.075s, randomly uniformly distributed within a range of 0 - 414.8N. The range is chosen such that half of the trajectories contain critical abrupt faults. The impulsive forces are introduced randomly within a period of 1.5s, and a total of 900 trajectories were simulated. 
@@ -115,6 +115,9 @@ To prevent the Digit robot from getting damaged during data collection, the hard
 <p align="center">
    Figure 3
     </p>   
+#### References
+1. M. E. Mungai, G. Prabhakaran, and J. Grizzle, “Fall Prediction for Bipedal Robots: The Standing Phase,” arXiv preprint arXiv:2309.14546 (2023), Submitted to ICRA 2024.
+2. G. Gibson, “Terrain-aware bipedal locomotion,” Ph.D. dissertation, University of Michigan, 2023.
 
 
 
