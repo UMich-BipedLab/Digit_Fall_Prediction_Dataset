@@ -2,6 +2,19 @@
 
 This dataset is comprised of simulation and hardware trajectories with various faults for the Digit robot during the task of standing. The simulation trajectories contain abrupt, incipient, and intermittent faults, while the hardware trajectories only have abrupt and incipient faults.
 
+### Contents
+- Repository Organization ()
+- [Installation](https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/edit/main/README.md#installation)
+- Downloading the Dataset
+- Loading the Dataset
+- Dataset Information
+   - Background
+   - Simulation Data Generation
+    - Abrupt Faults
+    - Incipient Faults
+    - Intermittent Faults
+   - Hardware Data Generation
+
 ### Installation
 
 1. Clone the repository
@@ -26,10 +39,10 @@ This dataset is comprised of simulation and hardware trajectories with various f
    make all
    ```
 
-### Downloading the dataset
+### Downloading the Dataset
 [Download the digit data folder](https://drive.google.com/drive/folders/16OIbha19oqi7Iw0b9ZPmbNT7O6e3dWlQ?usp=sharing) and extract it in Digit_Fall_Prediction_Dataset root folder. Keep the folder name as digit data.
 
-### Loading the dataset
+### Loading the Dataset
 ```
 # create the DatasetLoader class
 dl = DatasetLoader()
