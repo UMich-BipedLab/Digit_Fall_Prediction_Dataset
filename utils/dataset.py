@@ -362,17 +362,17 @@ class DatasetLoader():
         Subtracts the initial value of features
         """
         for traj in self.time_data:
-            self.q_data[traj] -= self.q_data[traj] - self.q_data[traj][0]
-            self.qdot_data[traj] -= self.qdot_data[traj] - self.qdot_data[traj][0]   
-            self.command_torque_data[traj] -= self.command_torque_data[traj] - self.command_torque_data[traj][0]     
+            self.q_data[traj] -= self.q_data[traj][0]
+            self.qdot_data[traj] -= self.qdot_data[traj][0]   
+            self.command_torque_data[traj] -= self.command_torque_data[traj][0]     
             for ang_mom_feature_name in list(self.ang_mom_data[traj].keys()):         
-                self.ang_mom_data[traj][ang_mom_feature_name] -= self.ang_mom_data[traj][ang_mom_feature_name] - self.ang_mom_data[traj][ang_mom_feature_name][0] 
+                self.ang_mom_data[traj][ang_mom_feature_name] -= self.ang_mom_data[traj][ang_mom_feature_name][0] 
             for pos_feature_name in list(self.pos_data[traj].keys()): 
                 if pos_feature_name != 'p_COM_rel':
-                    self.pos_data[traj][pos_feature_name] -= self.pos_data[traj][pos_feature_name] - self.pos_data[traj][pos_feature_name][0] 
+                    self.pos_data[traj][pos_feature_name] -= self.pos_data[traj][pos_feature_name][0] 
             for vel_feature_name in list(self.vel_data[traj].keys()): 
                 if vel_feature_name != 'v_COM_rel':
-                    self.vel_data[traj][vel_feature_name] -= self.vel_data[traj][vel_feature_name] - self.vel_data[traj][vel_feature_name][0]             
+                    self.vel_data[traj][vel_feature_name] -= self.vel_data[traj][vel_feature_name][0]             
     
     def _truncate_data_helper(self,
                             start_idx: int,
