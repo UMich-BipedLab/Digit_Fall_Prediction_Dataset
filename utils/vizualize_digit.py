@@ -1,74 +1,76 @@
 import numpy as np
-import DynamicsCalculator as dc
+import matplotlib.pyplot as plt
+from utils import DynamicsCalculator as dc
 
-def vizualize_digit(q):
 
-    dir=feat_info['dir']
-    file_name=feat_info['file_name']
-    mat=spio.loadmat(dir+file_name, struct_as_record=False, squeeze_me=True)
-    data=mat['stab_data']
-    x=data.x_all
-    q=x[0:6,:]
-    t=data.t_all
-    if 'cont' in feat_info['file_name']:
-        # feat_info['truncate_beginning']=1
-        t_start=0.26    
-        start_idx=np.where(t>=t_start)[0][0]
-        t = (t-t[start_idx])
-
-    [row_num, col_num] = q.shape
-
-    if stop_idx == 10.5:
-        stop_idx= col_num
-  
-    if hasattr(data,'f_ext_all'):
-        f_ext= data.f_ext_all
-    else:
-        f_ext=np.zeros((2,x.shape[-1]))
-
+def vizualize_digit(q_all):
+    """
+    Vizualize a trajectory over a 2D plot
+    """
+    # generate all required joint positions
+    p_COM = []
+    p_left_toe_pitch = []
+    p_shin_to_tarsus_left = []
+    p_knee_to_shin_left = []
+    p_left_knee = []
+    p_left_hip_pitch = []
+    for q in q_all:
+        p_COM.append(dc.get_position(q, "p_COM"))
+        p_left_toe_pitch.append(dc.get_position(q, "p_left_toe_pitch"))
+        p_shin_to_tarsus_left.append(dc.get_position(q, "p_shin_to_tarsus_left"))
+        p_knee_to_shin_left.append(dc.get_position(q, "p_knee_to_shin_left"))
+        p_left_knee.append(dc.get_position(q, "p_left_knee"))
+        p_left_hip_pitch.append(dc.get_position(q, "p_left_hip_pitch"))
     
-    p_com=data.p_com
-
+    # convert lists to numpy array
+    p_COM = np.array(p_COM)
+    p_left_toe_pitch = np.array(p_left_toe_pitch)
+    p_shin_to_tarsus_left = np.array(p_shin_to_tarsus_left)
+    p_knee_to_shin_left = np.array(p_knee_to_shin_left)
+    p_left_knee = np.array(p_left_knee)
+    p_left_hip_pitch = np.array(p_left_hip_pitch)
     
-    p_toe=data.p_toe
-    p_heel=data.p_heel
-    Ptorso = Ptorso_fun(q)
-    Phip = Phip_fun(q)
-    Pknee = Pknee_fun(q)
-
-
+    # set up plotting
     plt.figure()
-    line_1 = plt.plot([0, 0.7071], [0, 0.7071 ], color='blue', linewidth=4)[0]
-    line_2 = plt.plot([0, 0.7071], [0, 0.7071 ], color='black', linewidth=4)[0]
-    line_3 = plt.plot([0, 0.7071], [0, 0.7071 ], color='red', linewidth=4)[0]
-    line_4 = plt.plot([0, 0.7071], [0, 0.7071 ],color='blue', linewidth=4)[0]
-    dot1 = plt.plot([0], [0.7071],'*', linewidth=6, color='green')[0]
+    line_1 = plt.plot([0, 0.7071], [0, 0.7071 ], color='red', linewidth=4)[0]
+    line_2 = plt.plot([0, 0.7071], [0, 0.7071 ], color='orange', linewidth=4)[0]
+    line_3 = plt.plot([0, 0.7071], [0, 0.7071 ], color='yellow', linewidth=4)[0]
+    line_4 = plt.plot([0, 0.7071], [0, 0.7071 ],color='green', linewidth=4)[0]
+    line_5 = plt.plot([0, 0.7071], [0, 0.7071 ],color='indigo', linewidth=4)[0]   
+    dot = plt.plot([0], [0.7071],'*', linewidth=6, color='violet')[0]
+    
     plt.axhline(y = 0.0, color = 'black')
-    plt.xlim(-0.5,4.6)
-    plt.ylim(-0.5,1.6)
-
-    for i in range(start_idx,stop_idx):
-        Pknee_now= Pknee[:,i]
-        Phip_now = Phip[:,i]
-        Ptorso_now = Ptorso[:,i]
-        Pfoot_now=q[0:2,i]
-        Pheel_now=p_heel[:,i]
-        Ptoe_now = p_toe[:,i]
-        Pcom_now=p_com[:,i]
+    plt.xlim(-1.2, 1.2)
+    plt.ylim(-0.2, 1.3)
+    
+    # index to cut off trajectory if digit robot falls
+    cut_off_index = len(q_all)-1
+    if p_COM[-1, 2] < 0.5:
+        cut_off_index = np.where(p_COM[:, 2] < 0.5)[0][0]
+    
+    for i in range(0, cut_off_index, 10):
+        # get the current join positions
+        p_COM_curr = p_COM[i]
+        p_left_toe_pitch_curr = p_left_toe_pitch[i]
+        p_shin_to_tarsus_left_curr = p_shin_to_tarsus_left[i]
+        p_knee_to_shin_left_curr = p_knee_to_shin_left[i]
+        p_left_knee_curr = p_left_knee[i]
+        p_left_hip_pitch_curr = p_left_hip_pitch[i]
+        q_curr = q_all[i]
         
-        line_1.set_data([Ptoe_now[0], Pheel_now[0]], [Ptoe_now[1],Pheel_now[1] ])
-        line_2.set_data([Pfoot_now[0], Pknee_now[0]], [Pfoot_now[1],Pknee_now[1] ])
-        line_3.set_data([Pknee_now[0], Phip_now[0]], [Pknee_now[1],Phip_now[1] ])
-        line_4.set_data([Phip_now[0], Ptorso_now[0]], [Phip_now[1],Ptorso_now[1] ])
-        dot1.set_data([Pcom_now[0]], [Pcom_now[1]])
-        # plt.axhline(y = 0.0, color = 'black')
-
-        if t[i] >= t_fall_predicted:
-            plt.text(1,1.5, 'fall predicted', fontsize='large')
-            plt.text(1,1.25, 't_fall_predicted: ' + str(t[i]), fontsize='large')
-            plt.text(1,1.0, 'escape time: ' + str(t_escape), fontsize='large')
-            break
-
-        plt.pause(1e-8)
+        # set the joint positions to line plots
+        line_1.set_data([p_shin_to_tarsus_left_curr[0], p_left_toe_pitch_curr[0]], [p_shin_to_tarsus_left_curr[2], p_left_toe_pitch_curr[2]])
+        line_2.set_data([p_knee_to_shin_left_curr[0], p_shin_to_tarsus_left_curr[0]], [p_knee_to_shin_left_curr[2], p_shin_to_tarsus_left_curr[2]])
+        line_3.set_data([p_left_knee_curr[0], p_knee_to_shin_left_curr[0]], [p_left_knee_curr[2], p_knee_to_shin_left_curr[2]])
+        line_4.set_data([p_left_hip_pitch_curr[0], p_left_knee_curr[0]], [p_left_hip_pitch_curr[2], p_left_knee_curr[2]])
+        line_5.set_data([q_curr[0], p_left_hip_pitch_curr[0]], [q_curr[2], p_left_hip_pitch_curr[2]])
+        
+        # set center of mass position
+        dot.set_data([p_COM_curr[0], p_COM_curr[2]])
+        
+        # print(i)
+    
+        plt.pause(0.0001)
 
     plt.show()    
+    
