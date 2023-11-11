@@ -38,11 +38,11 @@ def visualize(trajectory_name):
                     subtract_initial_value=False)
     q_data = dl.q_data
     
-    viz.vizualize_digit(q_all=q_data[trajectory_name])
+    viz.vizualize_digit3D(q_all=q_data[trajectory_name])
 
     
 if __name__ == "__main__":
-    dl = load_digit_dataset()
-    dynamics_calculator_example()
+    # dl = load_digit_dataset()
+    # dynamics_calculator_example()
     trajectory_name = "sim_fd_1.0_f_40.088151587814565_ft_9.199487738996039_pertb_137.6519929672542.bag"
     visualize(trajectory_name=trajectory_name)
