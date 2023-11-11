@@ -74,194 +74,91 @@ def vizualize_digit2D(q_all):
         plt.pause(0.0001)
 
     plt.show()
-
-
+    
+    
 def vizualize_digit3D(q_all):
     """
-    Vizualize a trajectory over a 2D plot
+    Vizualize a trajectory over a 3D plot
     """
-    # generate all required joint positions
-    p_COM = []
+    data_dict = {"p_COM":                        np.zeros(shape=(len(q_all), 3)),
+                 "p_LeftToeFront":               np.zeros(shape=(len(q_all), 3)),
+                 "p_RightToeFront":              np.zeros(shape=(len(q_all), 3)),
+                 "p_LeftToeBack":                np.zeros(shape=(len(q_all), 3)),
+                 "p_RightToeBack":               np.zeros(shape=(len(q_all), 3)),
+                 "p_left_toe_pitch":             np.zeros(shape=(len(q_all), 3)),
+                 "p_right_toe_pitch":            np.zeros(shape=(len(q_all), 3)),
+                 "p_shin_to_tarsus_left":        np.zeros(shape=(len(q_all), 3)),
+                 "p_shin_to_tarsus_right":       np.zeros(shape=(len(q_all), 3)),
+                 "p_knee_to_shin_left":          np.zeros(shape=(len(q_all), 3)),
+                 "p_knee_to_shin_right":         np.zeros(shape=(len(q_all), 3)),
+                 "p_left_knee":                  np.zeros(shape=(len(q_all), 3)),
+                 "p_right_knee":                 np.zeros(shape=(len(q_all), 3)),
+                 "p_left_hip_pitch":             np.zeros(shape=(len(q_all), 3)),
+                 "p_right_hip_pitch":            np.zeros(shape=(len(q_all), 3)),
+                 "p_base":                       q_all[:, :3],
+                 "p_shoulder_pitch_joint_left":  np.zeros(shape=(len(q_all), 3)),
+                 "p_shoulder_pitch_joint_right": np.zeros(shape=(len(q_all), 3)),
+                 "p_shoulder_yaw_joint_left":    np.zeros(shape=(len(q_all), 3)),
+                 "p_shoulder_yaw_joint_right":   np.zeros(shape=(len(q_all), 3)),
+                 "p_elbow_joint_left":           np.zeros(shape=(len(q_all), 3)),
+                 "p_elbow_joint_right":          np.zeros(shape=(len(q_all), 3))
+                 }
     
-    p_LeftToeFront = []
-    p_RightToeFront = []
+    joint_names = list(data_dict.keys())
     
-    p_LeftToeBack = []
-    p_RightToeBack = []
+    plot_info = [   # [start_position,                end_position,                  line color]
+                    ["p_LeftToeFront",               "p_LeftToeBack",                "black"],
+                    ["p_RightToeFront",              "p_RightToeBack",               "black"],
+                    ["p_shin_to_tarsus_left",        "p_left_toe_pitch",             "red"],
+                    ["p_shin_to_tarsus_right",       "p_right_toe_pitch",            "red"],
+                    ["p_knee_to_shin_left",          "p_shin_to_tarsus_left",        "orange"],
+                    ["p_knee_to_shin_right",         "p_shin_to_tarsus_right",       "orange"],
+                    ["p_left_knee",                  "p_knee_to_shin_left",          "yellow"],
+                    ["p_right_knee",                 "p_knee_to_shin_right",         "yellow"],
+                    ["p_left_hip_pitch",             "p_left_knee",                  "green"],
+                    ["p_right_hip_pitch",            "p_right_knee",                 "green"],
+                    ["p_base",                       "p_left_hip_pitch",             "blue"],
+                    ["p_base",                       "p_right_hip_pitch",            "blue"],
+                    ["p_shoulder_pitch_joint_left",  "p_base",                       "indigo"],
+                    ["p_shoulder_pitch_joint_right", "p_base",                       "indigo"],
+                    ["p_shoulder_yaw_joint_left",    "p_shoulder_pitch_joint_left",  "slategrey"],
+                    ["p_shoulder_yaw_joint_right",   "p_shoulder_pitch_joint_right", "slategrey"],
+                    ["p_elbow_joint_left",           "p_shoulder_yaw_joint_left",    "mediumblue"],
+                    ["p_elbow_joint_right",          "p_shoulder_yaw_joint_right",   "mediumblue"],
+                ]
     
-    p_left_toe_pitch = []
-    p_right_toe_pitch = []
     
-    p_shin_to_tarsus_left = []
-    p_shin_to_tarsus_right = []
-    
-    p_knee_to_shin_left = []
-    p_knee_to_shin_right = []
-    
-    p_left_knee = []
-    p_right_knee = []
-    
-    p_left_hip_pitch = []
-    p_right_hip_pitch = []
-    
-    for q in q_all:
-        p_COM.append(dc.get_position(q, "p_COM"))
-        
-        p_LeftToeFront.append(dc.get_position(q, "p_LeftToeFront"))
-        p_RightToeFront.append(dc.get_position(q, "p_RightToeFront"))
-        
-        p_LeftToeBack.append(dc.get_position(q, "p_LeftToeBack"))
-        p_RightToeBack.append(dc.get_position(q, "p_RightToeBack"))
-        
-        p_left_toe_pitch.append(dc.get_position(q, "p_left_toe_pitch"))
-        p_right_toe_pitch.append(dc.get_position(q, "p_right_toe_pitch"))
-        
-        p_shin_to_tarsus_left.append(dc.get_position(q, "p_shin_to_tarsus_left"))
-        p_shin_to_tarsus_right.append(dc.get_position(q, "p_shin_to_tarsus_right"))
-        
-        p_knee_to_shin_left.append(dc.get_position(q, "p_knee_to_shin_left"))
-        p_knee_to_shin_right.append(dc.get_position(q, "p_knee_to_shin_right"))
-        
-        p_left_knee.append(dc.get_position(q, "p_left_knee"))
-        p_right_knee.append(dc.get_position(q, "p_right_knee"))
-        
-        p_left_hip_pitch.append(dc.get_position(q, "p_left_hip_pitch"))
-        p_right_hip_pitch.append(dc.get_position(q, "p_right_hip_pitch"))
-        
-    
-    # convert lists to numpy array
-    p_COM = np.array(p_COM)
-    
-    p_LeftToeFront = np.array(p_LeftToeFront)
-    p_RightToeFront = np.array(p_RightToeFront)
-    
-    p_LeftToeBack = np.array(p_LeftToeBack)
-    p_RightToeBack = np.array(p_RightToeBack)
-    
-    p_left_toe_pitch = np.array(p_left_toe_pitch)
-    p_right_toe_pitch = np.array(p_right_toe_pitch)
-    
-    p_shin_to_tarsus_left = np.array(p_shin_to_tarsus_left)
-    p_shin_to_tarsus_right = np.array(p_shin_to_tarsus_right)
-    
-    p_knee_to_shin_left = np.array(p_knee_to_shin_left)
-    p_knee_to_shin_right = np.array(p_knee_to_shin_right)
-    
-    p_left_knee = np.array(p_left_knee)
-    p_right_knee = np.array(p_right_knee)
-    
-    p_left_hip_pitch = np.array(p_left_hip_pitch)
-    p_right_hip_pitch = np.array(p_right_hip_pitch)
-    
+    # calculate and store all joint positions in a trajectory                   
+    for idx, q in enumerate(q_all):
+        for joint_name in joint_names:
+            if joint_name == "p_base":
+                continue
+            data_dict[joint_name][idx, :] = dc.get_position(q, joint_name)
+            
+            
     # index to cut off trajectory if digit robot falls
     cut_off_index = len(q_all)-1
-    if p_COM[-1, 2] < 0.5:
-        cut_off_index = np.where(p_COM[:, 2] < 0.5)[0][0]
+    if data_dict["p_COM"][-1, 2] < 0.5:
+        cut_off_index = np.where(data_dict["p_COM"][:, 2] < 0.5)[0][0]
         
     axes = plt.axes(projection="3d")
     
-    for i in range(0, cut_off_index, 10):
+    for i in range(0, cut_off_index, 20):
         # set up axes
         axes.cla()
         axes.set_xlim3d(left=-1, right=1) 
         axes.set_ylim3d(bottom=-1, top=1) 
         axes.set_zlim3d(bottom=0, top=2) 
         axes.set_xlabel("X")
+        axes.set_ylabel("Y")
         
-        # get the current join positions
-        p_COM_curr = p_COM[i]
-        
-        p_LeftToeFront_curr = p_LeftToeFront[i]
-        p_RightToeFront_curr = p_RightToeFront[i]
-        
-        p_LeftToeBack_curr = p_LeftToeBack[i]
-        p_RightToeBack_curr = p_RightToeBack[i]
-        
-        p_left_toe_pitch_curr = p_left_toe_pitch[i]
-        p_right_toe_pitch_curr = p_right_toe_pitch[i]
-        
-        p_shin_to_tarsus_left_curr = p_shin_to_tarsus_left[i]
-        p_shin_to_tarsus_right_curr = p_shin_to_tarsus_right[i]
-        
-        p_knee_to_shin_left_curr = p_knee_to_shin_left[i]
-        p_knee_to_shin_right_curr = p_knee_to_shin_right[i]
-        
-        p_left_knee_curr = p_left_knee[i]
-        p_right_knee_curr = p_right_knee[i]
-        
-        p_left_hip_pitch_curr = p_left_hip_pitch[i]
-        p_right_hip_pitch_curr = p_right_hip_pitch[i]
-        
-        q_curr = q_all[i]
-        
-        # plot current joint positions
-        axes.plot([p_LeftToeBack_curr[0], p_LeftToeFront_curr[0]],
-                  [p_LeftToeBack_curr[1], p_LeftToeFront_curr[1]],
-                  [p_LeftToeBack_curr[2], p_LeftToeFront_curr[2]],
-                   linewidth=6,
-                   color="black")
-        axes.plot([p_RightToeBack_curr[0], p_RightToeFront_curr[0]],
-                  [p_RightToeBack_curr[1], p_RightToeFront_curr[1]],
-                  [p_RightToeBack_curr[2], p_RightToeFront_curr[2]],
-                   linewidth=6,
-                   color="black")
-        
-        axes.plot([p_shin_to_tarsus_left_curr[0], p_left_toe_pitch_curr[0]],
-                  [p_shin_to_tarsus_left_curr[1], p_left_toe_pitch_curr[1]],
-                  [p_shin_to_tarsus_left_curr[2], p_left_toe_pitch_curr[2]],
-                   linewidth=6,
-                   color="red")
-        axes.plot([p_shin_to_tarsus_right_curr[0], p_right_toe_pitch_curr[0]],
-                  [p_shin_to_tarsus_right_curr[1], p_right_toe_pitch_curr[1]],
-                  [p_shin_to_tarsus_right_curr[2], p_right_toe_pitch_curr[2]],
-                   linewidth=6,
-                   color="red")
-        
-        axes.plot([p_knee_to_shin_left_curr[0], p_shin_to_tarsus_left_curr[0]],
-                  [p_knee_to_shin_left_curr[1], p_shin_to_tarsus_left_curr[1]],
-                  [p_knee_to_shin_left_curr[2], p_shin_to_tarsus_left_curr[2]],
-                  linewidth=6,
-                  color="orange")
-        axes.plot([p_knee_to_shin_right_curr[0], p_shin_to_tarsus_right_curr[0]],
-                  [p_knee_to_shin_right_curr[1], p_shin_to_tarsus_right_curr[1]],
-                  [p_knee_to_shin_right_curr[2], p_shin_to_tarsus_right_curr[2]],
-                  linewidth=6,
-                  color="orange")
-        
-        axes.plot([p_left_knee_curr[0], p_knee_to_shin_left_curr[0]],
-                  [p_left_knee_curr[1], p_knee_to_shin_left_curr[1]],
-                  [p_left_knee_curr[2], p_knee_to_shin_left_curr[2]],
-                  linewidth=6,
-                  color="yellow")
-        axes.plot([p_right_knee_curr[0], p_knee_to_shin_right_curr[0]],
-                  [p_right_knee_curr[1], p_knee_to_shin_right_curr[1]],
-                  [p_right_knee_curr[2], p_knee_to_shin_right_curr[2]],
-                  linewidth=6,
-                  color="yellow")
-        
-        axes.plot([p_left_hip_pitch_curr[0], p_left_knee_curr[0]],
-                  [p_left_hip_pitch_curr[1], p_left_knee_curr[1]],
-                  [p_left_hip_pitch_curr[2], p_left_knee_curr[2]],
-                  linewidth=6,
-                  color="green")
-        axes.plot([p_right_hip_pitch_curr[0], p_right_knee_curr[0]],
-                  [p_right_hip_pitch_curr[1], p_right_knee_curr[1]],
-                  [p_right_hip_pitch_curr[2], p_right_knee_curr[2]],
-                  linewidth=6,
-                  color="green")
-        
-        axes.plot([q_curr[0], p_left_hip_pitch_curr[0]],
-                  [q_curr[1], p_left_hip_pitch_curr[1]],
-                  [q_curr[2], p_left_hip_pitch_curr[2]],
-                  linewidth=6,
-                  color="blue")
-        axes.plot([q_curr[0], p_right_hip_pitch_curr[0]],
-                  [q_curr[1], p_right_hip_pitch_curr[1]],
-                  [q_curr[2], p_right_hip_pitch_curr[2]],
-                  linewidth=6,
-                  color="blue")
+        for start_point, end_point, line_color in plot_info:
+            axes.plot([data_dict.get(start_point)[i, 0], data_dict.get(end_point)[i, 0]],
+                      [data_dict.get(start_point)[i, 1], data_dict.get(end_point)[i, 1]],
+                      [data_dict.get(start_point)[i, 2], data_dict.get(end_point)[i, 2]],
+                      linewidth=6,
+                      color=line_color)
         
         plt.pause(0.0001)
     
     plt.show()
-    
