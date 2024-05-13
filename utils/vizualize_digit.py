@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
+# from mpl_toolkits import mplot3d
+import matplotlib.animation as animation
 from utils import DynamicsCalculator as dc
 
 
@@ -127,6 +128,13 @@ def vizualize_digit3D(q_all):
                     ["p_elbow_joint_right",          "p_shoulder_yaw_joint_right",   "mediumblue"],
                 ]
     
+    def update_lines(t, lines, plot_info):
+        for line, info in zip(lines, plot_info):
+            start_point, end_point, line_color = info
+            line.set_data([data_dict.get(start_point)[t, 0], data_dict.get(end_point)[t, 0]],
+                          [data_dict.get(start_point)[t, 1], data_dict.get(end_point)[t, 1]])
+            line.set_3d_properties([data_dict.get(start_point)[t, 2], data_dict.get(end_point)[t, 2]])
+        return lines
     
     # calculate and store all joint positions in a trajectory                   
     for idx, q in enumerate(q_all):
@@ -140,25 +148,22 @@ def vizualize_digit3D(q_all):
     cut_off_index = len(q_all)-1
     if data_dict["p_COM"][-1, 2] < 0.5:
         cut_off_index = np.where(data_dict["p_COM"][:, 2] < 0.5)[0][0]
-        
-    axes = plt.axes(projection="3d")
     
-    for i in range(0, cut_off_index, 20):
-        # set up axes
-        axes.cla()
-        axes.set_xlim3d(left=-1, right=1) 
-        axes.set_ylim3d(bottom=-1, top=1) 
-        axes.set_zlim3d(bottom=0, top=2) 
-        axes.set_xlabel("X")
-        axes.set_ylabel("Y")
-        
-        for start_point, end_point, line_color in plot_info:
-            axes.plot([data_dict.get(start_point)[i, 0], data_dict.get(end_point)[i, 0]],
-                      [data_dict.get(start_point)[i, 1], data_dict.get(end_point)[i, 1]],
-                      [data_dict.get(start_point)[i, 2], data_dict.get(end_point)[i, 2]],
-                      linewidth=6,
-                      color=line_color)
-        
-        plt.pause(0.0001)
-    
-    plt.show()
+    fig = plt.figure()
+    axes = fig.add_subplot(projection="3d")
+
+    # Create lines initially without data
+    lines = [axes.plot([], [], [])[0] for _ in range(cut_off_index)]
+    print("cut off index: ", cut_off_index)
+
+
+    # Setting the axes properties
+    axes.set(xlim3d=(-1, 1), xlabel='X')
+    axes.set(ylim3d=(-1, 1), ylabel='Y')
+    axes.set(zlim3d=(0, 2), zlabel='Z')
+
+    # Creating the Animation object
+    ani = animation.FuncAnimation(
+        fig, update_lines, cut_off_index, fargs=(lines, plot_info), interval=100)
+
+    return ani
