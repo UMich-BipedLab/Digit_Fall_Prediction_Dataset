@@ -145,6 +145,10 @@ To prevent the Digit robot from getting damaged during data collection, the hard
 The world frame is defined as the Digit's base pose (position and orientation) when it is powered on. During hardware data collection, after powering the robot on, it is positioned in its mark (as seen by the alignment of the Digit's toes to the blue tape on the ground in Figure 3). To ensure that the data collected is with reference to the Digit's starting pose as shown in Figure 3 instead of the world frame, a homogenous transformation is performed on the data collected. For implementation details, please refer to `transform_real_trajectories()` function in the ./utils/dataset.py file.
 
 
+#### Trajectory Vizualisation
+A simple Vizualisation program is provided to observe a specified trajectory of the digit robot. Specifiy the name of the trajectory and run the visualize function in main.py (e.g. `python3 main.py`). Ensure that the specified trajectory is loaded by dataset.py.
+
+
 #### References
 1. M. E. Mungai, G. Prabhakaran, and J. Grizzle, “Fall Prediction for Bipedal Robots: The Standing Phase,” arXiv preprint arXiv:2309.14546 (2023), Submitted to ICRA 2024.
 2. G. Gibson, “Terrain-aware bipedal locomotion,” Ph.D. dissertation, University of Michigan, 2023.

@@ -57,7 +57,7 @@ def _load_c_functions(ref_point):
     return func
 
 
-def get_position(q, dq, ref_point):
+def get_position(q, ref_point):
     x_ar = (ctypes.c_double * len(q))(*q)
     prefix = "p"
     func = _load_c_functions(ref_point)

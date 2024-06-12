@@ -1,6 +1,7 @@
+import numpy as np
 from utils import dataset
 from utils import DynamicsCalculator as dc
-import numpy as np
+from utils import vizualize_digit as viz
 
 
 def load_digit_dataset():
@@ -24,12 +25,24 @@ def load_digit_dataset():
 def dynamics_calculator_example():
     ang_mom = dc.get_angular_momentum(np.zeros(30), np.zeros(30), [1,2, 3], [3, 4, 56])
     print(ang_mom)
-    pos = dc.get_position(np.zeros(30), np.zeros(30), "p_COM")
+    pos = dc.get_position(np.zeros(30), "p_COM")
     print(pos)
     vel = dc.get_velocity(np.zeros(30), np.zeros(30), "p_COM")
     print(vel)
+    
+    
+def visualize(trajectory_name):
+    dl = dataset.DatasetLoader()
+    dl.load_dataset(transform_real_trajectories=True,
+                    remove_hardware_data_after_killed=True,
+                    subtract_initial_value=False)
+    q_data = dl.q_data
+    
+    viz.vizualize_digit3D(q_all=q_data[trajectory_name])
 
     
 if __name__ == "__main__":
-    dl = load_digit_dataset()
-    dynamics_calculator_example()
+    # dl = load_digit_dataset()
+    # dynamics_calculator_example()
+    trajectory_name = "sim_fd_1.0_f_40.088151587814565_ft_9.199487738996039_pertb_137.6519929672542.bag"
+    visualize(trajectory_name=trajectory_name)
