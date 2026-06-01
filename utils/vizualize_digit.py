@@ -165,5 +165,5 @@ def vizualize_digit3D(q_all):
     # Creating the Animation object
     ani = animation.FuncAnimation(
         fig, update_lines, cut_off_index, fargs=(lines, plot_info), interval=100)
-
+    
     return ani

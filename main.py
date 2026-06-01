@@ -31,18 +31,23 @@ def dynamics_calculator_example():
     print(vel)
     
     
-def visualize(trajectory_name):
+def visualize(trajectory_name: str = None):
     dl = dataset.DatasetLoader()
     dl.load_dataset(transform_real_trajectories=True,
                     remove_hardware_data_after_killed=True,
                     subtract_initial_value=False)
     q_data = dl.q_data
     
+    # If trajectory is None, choose the first trajectory
+    if trajectory_name is None:
+        trajectory_name = list(q_data.keys())[0] 
+
     viz.vizualize_digit3D(q_all=q_data[trajectory_name])
 
     
 if __name__ == "__main__":
     # dl = load_digit_dataset()
     # dynamics_calculator_example()
-    trajectory_name = "sim_fd_1.0_f_40.088151587814565_ft_9.199487738996039_pertb_137.6519929672542.bag"
-    visualize(trajectory_name=trajectory_name)
+    # trajectory_name = "sim_fd_1.0_f_40.088151587814565_ft_9.199487738996039_pertb_137.6519929672542.bag"
+    # visualize(trajectory_name=trajectory_name)
+    visualize()
