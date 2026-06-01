@@ -75,7 +75,15 @@ https://github.com/UMich-BipedLab/Digit_Fall_Prediction_Dataset/assets/30183296/
    ```
 
 ### Downloading the Dataset
-[Download the digit data folder](https://drive.google.com/drive/folders/16OIbha19oqi7Iw0b9ZPmbNT7O6e3dWlQ?usp=sharing) and extract it in Digit_Fall_Prediction_Dataset root folder. Keep the folder name as digit data.
+```
+# Set permissions
+chmod +x setup.sh
+
+# Download dataset from huggingface
+./setup.sh
+```
+
+[Googe drive link of dataset](https://drive.google.com/drive/folders/16OIbha19oqi7Iw0b9ZPmbNT7O6e3dWlQ?usp=sharing) (for backward compatability)
 
 ### Loading the Dataset
 ```
